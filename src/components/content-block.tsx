@@ -5,5 +5,9 @@ export default function ContentBlock({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <div className="bg-[#f7f8fa] shadow-sm rounded-md overflow-hidden h-full w-full">
+      {children}
+    </div>
+  );
 }

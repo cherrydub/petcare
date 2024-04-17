@@ -1,5 +1,5 @@
 import React from "react";
 
 export default function PetDetails() {
-  return <div>pet-details</div>;
+  return <section className="h-full w-ful">pet-details</section>;
 }

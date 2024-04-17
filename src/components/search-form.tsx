@@ -1,5 +1,9 @@
 import React from "react";
 
 export default function SearchForm() {
-  return <div>search-form</div>;
+  return (
+    <form className="w-full h-full">
+      <input type="text" className="w-full h-full bg-white/20" />
+    </form>
+  );
 }
