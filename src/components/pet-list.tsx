@@ -1,12 +1,17 @@
+"use client";
+
+import { usePetContext } from "@/lib/hooks";
 import { Pet } from "@/lib/types";
 import Image from "next/image";
 import React from "react";
 
-type PetListProps = {
-  pets: Pet[];
-};
+// type PetListProps = {
+//   pets: Pet[];
+// };
 
-export default function PetList({ pets }: PetListProps) {
+export default function PetList() {
+  const { pets } = usePetContext();
+
   return (
     <ul className="bg-white border-b border-black/[0.08]">
       {pets.map((pet) => (
