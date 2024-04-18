@@ -1,14 +1,9 @@
 "use client";
 
 import { usePetContext } from "@/lib/hooks";
-import { Pet } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
-
-// type PetListProps = {
-//   pets: Pet[];
-// };
 
 export default function PetList() {
   const { pets, selectedPetId, handleChangeSelectedPetId } = usePetContext();
