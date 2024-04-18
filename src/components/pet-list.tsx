@@ -2,6 +2,7 @@
 
 import { usePetContext } from "@/lib/hooks";
 import { Pet } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import React from "react";
 
@@ -10,7 +11,7 @@ import React from "react";
 // };
 
 export default function PetList() {
-  const { pets, handleChangeSelectedPetId } = usePetContext();
+  const { pets, selectedPetId, handleChangeSelectedPetId } = usePetContext();
 
   return (
     <ul className="bg-white border-b border-black/[0.08]">
@@ -20,8 +21,12 @@ export default function PetList() {
             onClick={() => {
               handleChangeSelectedPetId(pet.id);
             }}
-            className="flex h-[70px] w-full cursor-pointer items-center px-5 text-base gap-3
-        hover:bg-[#eff1f2] focus:bg-[#eff1f2] transition"
+            className={cn(
+              "flex h-[70px] w-full cursor-pointer items-center px-5 text-base gap-3 hover:bg-[#eff1f2] focus:bg-[#eff1f2] transition",
+              {
+                "bg-[#eff1f2]": pet.id === selectedPetId,
+              }
+            )}
           >
             <Image
               src={pet.imageUrl}
