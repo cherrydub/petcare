@@ -16,6 +16,7 @@ type TPetContext = {
   handleChangeSelectedPetId: (id: string) => void;
   handleCheckoutPet: (id: string) => void;
   handleAddPet: (newPet: Omit<Pet, "id">) => void;
+  handleEditPet: (petId: string, updatedPet: Omit<Pet, "id">) => void;
 };
 
 export const PetContext = createContext<TPetContext | null>(null);
@@ -39,6 +40,16 @@ export default function PetContextProvider({
     setSelectedPetId(dateId);
   }
 
+  function handleEditPet(petId: string, updatedPet: Omit<Pet, "id">) {
+    const newPets = pets.map((pet) => {
+      if (pet.id === petId) {
+        return { id: petId, ...updatedPet };
+      }
+      return pet;
+    });
+    setPets(newPets);
+  }
+
   function handleChangeSelectedPetId(id: string) {
     setSelectedPetId(id);
   }
@@ -47,6 +58,16 @@ export default function PetContextProvider({
     const newPets = pets.filter((pet) => pet.id !== id);
     setPets(newPets);
     setSelectedPetId(null);
+  }
+
+  function updatePet(updatedPet: Pet) {
+    const newPets = pets.map((pet) => {
+      if (pet.id === updatedPet.id) {
+        return updatedPet;
+      }
+      return pet;
+    });
+    setPets(newPets);
   }
 
   return (
@@ -59,6 +80,7 @@ export default function PetContextProvider({
         handleChangeSelectedPetId,
         handleCheckoutPet,
         handleAddPet,
+        handleEditPet,
       }}
     >
       {children}

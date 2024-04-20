@@ -17,7 +17,7 @@ export default function PetForm({
   actionType,
   onFormSubmission,
 }: PetFormProps) {
-  const { handleAddPet, selectedPet } = usePetContext();
+  const { handleAddPet, selectedPet, handleEditPet } = usePetContext();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,9 +31,12 @@ export default function PetForm({
       age: +(formData.get("age") as string),
       notes: formData.get("notes") as string,
     };
-
     // adds pet, this function is in the context
-    handleAddPet(newPet);
+    if (actionType === "edit") {
+      handleEditPet(selectedPet!.id, newPet);
+    } else {
+      handleAddPet(newPet);
+    }
 
     // this function is passed in as a prop which allows the form to be closed after submission
     onFormSubmission();
