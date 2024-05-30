@@ -38,13 +38,13 @@ function TopBar({ pet }: Props) {
   return (
     <div className="flex items-center bg-white px-8 py-5 border-b border-light">
       <Image
-        src={pet?.imageUrl}
+        src={pet.imageUrl}
         alt="Dog"
         width={75}
         height={75}
         className="rounded-full object-cover w-[75px] h-[75px]"
       />
-      <h2 className="text-3xl font-semibold leading-7 ml-5">{pet?.name}</h2>
+      <h2 className="text-3xl font-semibold leading-7 ml-5">{pet.name}</h2>
       <div className="flex ml-auto space-x-2">
         <PetButton actionType="edit">Edit Pet</PetButton>
         <PetButton
@@ -52,9 +52,10 @@ function TopBar({ pet }: Props) {
           disabled={isPending}
           pendingText="Checking out..."
           onClick={async () => {
-            startTransition(async () => {
-              await checkoutPet(pet.id);
-            });
+            // startTransition(async () => {
+            //   await checkoutPet(pet.id);
+            // });
+            await checkoutPet(pet.id);
           }}
         />
       </div>

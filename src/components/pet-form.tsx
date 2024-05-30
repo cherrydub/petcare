@@ -7,7 +7,6 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { usePetContext } from "@/lib/hooks";
-import { addPet, editPet } from "@/actions/actions";
 import PetFormBtn from "./PetFormBtn";
 import { toast } from "sonner";
 
@@ -20,7 +19,11 @@ export default function PetForm({
   actionType,
   onFormSubmission,
 }: PetFormProps) {
-  const { selectedPet } = usePetContext();
+  const { selectedPet, handleAddPet, handleEditPet } = usePetContext();
+
+  // function handleAddPet(formData: FormData) {
+  //   throw new Error("Function not implemented.");
+  // }
 
   // function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
   //   e.preventDefault();
@@ -48,21 +51,32 @@ export default function PetForm({
   return (
     <form
       action={async (formData) => {
+        onFormSubmission();
+        const petData = {
+          name: formData.get("name") as string,
+          ownerName: formData.get("ownerName") as string,
+          imageUrl:
+            (formData.get("imageUrl") as string) ||
+            "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
+          age: +(formData.get("age") as string),
+          notes: formData.get("notes") as string,
+        };
+
         if (actionType === "edit") {
-          const error = await editPet(selectedPet!.id, formData);
-          if (error) {
-            toast(error.message);
-            return;
-          }
-          onFormSubmission();
+          // const error = await editPet(selectedPet!.id, formData);
+          // if (error) {
+          //   toast.warning(error.message);
+          //   return;
+          // }
+          await handleEditPet(selectedPet!.id, petData);
         }
         if (actionType === "add") {
-          const error = await addPet(formData);
-          if (error) {
-            toast(error.message);
-            return;
-          }
-          onFormSubmission();
+          // const error = await addPet(formData);
+          // if (error) {
+          //   toast.warning(error.message);
+          //   return;
+          // }
+          await handleAddPet(petData);
         }
       }}
       className="flex flex-col "
