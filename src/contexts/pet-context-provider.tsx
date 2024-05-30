@@ -31,8 +31,22 @@ export default function PetContextProvider({
   // const [pets, setPets] = useState(data);
   const [optimisticPets, setOptimisticPets] = useOptimistic(
     data,
-    (state, newPet) => {
-      return [...state, newPet];
+    (state, { action, payload }) => {
+      switch (action) {
+        case "add":
+          return [...state, { ...payload, id: Math.random().toString() }];
+        case "edit":
+          return state.map((pet) => {
+            if (pet.id === payload.id) {
+              return { ...pet, ...payload.updatedPet };
+            }
+            return pet;
+          });
+        case "checkout":
+          return state.filter((pet) => pet.id !== payload);
+        default:
+          return state;
+      }
     }
   );
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
@@ -43,7 +57,7 @@ export default function PetContextProvider({
 
   //event handlers / actions
   async function handleAddPet(newPet: Omit<Pet, "id">) {
-    setOptimisticPets(newPet);
+    setOptimisticPets({ action: "add", payload: newPet });
     const error = await addPet(newPet);
     if (error) {
       toast.warning(error.message);
@@ -52,6 +66,7 @@ export default function PetContextProvider({
   }
 
   async function handleEditPet(petId: string, updatedPet: Omit<Pet, "id">) {
+    setOptimisticPets({ action: "edit", payload: { id: petId, updatedPet } });
     const error = await editPet(petId, updatedPet);
     if (error) {
       toast.warning(error.message);
@@ -67,21 +82,25 @@ export default function PetContextProvider({
     // const newPets = data.filter((pet) => pet.id !== id);
     // setPets(newPets);
 
-    setOptimisticPets((prev) => prev.filter((pet) => pet.id !== id));
-    await checkoutPet(id);
+    setOptimisticPets({ action: "checkout", payload: id });
+    const error = await checkoutPet(id);
+    if (error) {
+      toast.warning(error.message);
+      return;
+    }
 
     setSelectedPetId(null);
   }
 
-  function updatePet(updatedPet: Pet) {
-    const newPets = data.map((pet) => {
-      if (pet.id === updatedPet.id) {
-        return updatedPet;
-      }
-      return pet;
-    });
-    setOptimisticPets(newPets);
-  }
+  // function updatePet(updatedPet: Pet) {
+  //   const newPets = data.map((pet) => {
+  //     if (pet.id === updatedPet.id) {
+  //       return updatedPet;
+  //     }
+  //     return pet;
+  //   });
+  //   setOptimisticPets(newPets);
+  // }
 
   return (
     <PetContext.Provider

@@ -20,7 +20,7 @@ export async function addPet(pet: Omit<Pet, "id">) {
 }
 
 export async function editPet(petId: string, newPetData: Omit<Pet, "id">) {
-  // await sleep(2500);
+  await sleep(2500);
 
   try {
     await prisma.pet.update({
@@ -37,7 +37,7 @@ export async function editPet(petId: string, newPetData: Omit<Pet, "id">) {
 }
 
 export async function checkoutPet(petId: string) {
-  // await sleep(2500);
+  await sleep(2500);
 
   try {
     await prisma.pet.delete({
