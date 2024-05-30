@@ -5,7 +5,7 @@ import { Pet } from "@/lib/types";
 import { sleep } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 
-export async function addPet(pet) {
+export async function addPet(pet: Omit<Pet, "id">) {
   await sleep(2500);
 
   try {
@@ -19,7 +19,7 @@ export async function addPet(pet) {
   revalidatePath("/app", "layout");
 }
 
-export async function editPet(petId, newPetData) {
+export async function editPet(petId: string, newPetData: Omit<Pet, "id">) {
   // await sleep(2500);
 
   try {
@@ -36,7 +36,7 @@ export async function editPet(petId, newPetData) {
   revalidatePath("/app", "layout");
 }
 
-export async function checkoutPet(petId) {
+export async function checkoutPet(petId: string) {
   // await sleep(2500);
 
   try {
