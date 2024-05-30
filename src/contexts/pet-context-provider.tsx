@@ -2,7 +2,7 @@
 
 import { addPet } from "@/actions/actions";
 import { Pet } from "@/lib/types";
-import React, { createContext, useState } from "react";
+import React, { createContext, useOptimistic, useState } from "react";
 
 type PetContextProviderProps = {
   children: React.ReactNode;
@@ -28,11 +28,12 @@ export default function PetContextProvider({
 }: PetContextProviderProps) {
   //state
   // const [pets, setPets] = useState(data);
+  const [optimisticPets, setOptimisticPets] = useOptimistic(pets);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
 
   //derived state
-  const selectedPet = pets.find((pet) => pet.id === selectedPetId);
-  const numberOfPets = pets.length;
+  const selectedPet = optimisticPets.find((pet) => pet.id === selectedPetId);
+  const numberOfPets = optimisticPets.length;
 
   //event handlers / actions
   async function handleAddPet(newPet: Omit<Pet, "id">) {
@@ -49,7 +50,7 @@ export default function PetContextProvider({
       }
       return pet;
     });
-    setPets(newPets);
+    setOptimisticPets(newPets);
   }
 
   function handleChangeSelectedPetId(id: string) {
@@ -58,7 +59,7 @@ export default function PetContextProvider({
 
   function handleCheckoutPet(id: string) {
     const newPets = pets.filter((pet) => pet.id !== id);
-    setPets(newPets);
+    setOptimisticPets(newPets);
     setSelectedPetId(null);
   }
 
@@ -69,7 +70,7 @@ export default function PetContextProvider({
       }
       return pet;
     });
-    setPets(newPets);
+    setOptimisticPets(newPets);
   }
 
   return (
