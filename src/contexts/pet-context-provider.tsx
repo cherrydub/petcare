@@ -1,7 +1,8 @@
 "use client";
 
 import { addPet, checkoutPet, editPet } from "@/actions/actions";
-import { Pet } from "@/lib/types";
+import { PetInternal } from "@/lib/types";
+import { Pet } from "@prisma/client";
 import React, { createContext, useOptimistic, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,13 +13,13 @@ type PetContextProviderProps = {
 
 type TPetContext = {
   pets: Pet[];
-  selectedPetId: string | null;
+  selectedPetId: Pet["id"] | null;
   selectedPet: Pet | undefined;
   numberOfPets: number;
-  handleChangeSelectedPetId: (id: string) => void;
-  handleCheckoutPet: (id: string) => Promise<void>;
-  handleAddPet: (newPet: Omit<Pet, "id">) => Promise<void>;
-  handleEditPet: (petId: string, updatedPet: Omit<Pet, "id">) => Promise<void>;
+  handleChangeSelectedPetId: (id: Pet["id"]) => void;
+  handleCheckoutPet: (id: Pet["id"]) => Promise<void>;
+  handleAddPet: (newPet: PetInternal) => Promise<void>;
+  handleEditPet: (petId: Pet["id"], updatedPet: PetInternal) => Promise<void>;
 };
 
 export const PetContext = createContext<TPetContext | null>(null);
@@ -56,7 +57,7 @@ export default function PetContextProvider({
   const numberOfPets = optimisticPets.length;
 
   //event handlers / actions
-  async function handleAddPet(newPet: Omit<Pet, "id">) {
+  async function handleAddPet(newPet: PetInternal) {
     setOptimisticPets({ action: "add", payload: newPet });
     const error = await addPet(newPet);
     if (error) {
@@ -65,7 +66,7 @@ export default function PetContextProvider({
     }
   }
 
-  async function handleEditPet(petId: string, updatedPet: Omit<Pet, "id">) {
+  async function handleEditPet(petId: Pet["id"], updatedPet: PetInternal) {
     setOptimisticPets({ action: "edit", payload: { id: petId, updatedPet } });
     const error = await editPet(petId, updatedPet);
     if (error) {
@@ -74,11 +75,11 @@ export default function PetContextProvider({
     }
   }
 
-  function handleChangeSelectedPetId(id: string) {
+  function handleChangeSelectedPetId(id: Pet["id"]) {
     setSelectedPetId(id);
   }
 
-  async function handleCheckoutPet(id: string) {
+  async function handleCheckoutPet(id: Pet["id"]) {
     // const newPets = data.filter((pet) => pet.id !== id);
     // setPets(newPets);
 
