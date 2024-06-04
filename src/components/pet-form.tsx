@@ -9,11 +9,37 @@ import { usePetContext } from "@/lib/hooks";
 import PetFormBtn from "./PetFormBtn";
 import { useForm } from "react-hook-form";
 import { PetInternal } from "@/lib/types";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type PetFormProps = {
   actionType: "add" | "edit";
   onFormSubmission: () => void;
 };
+
+const petFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(3, { message: "Name must be at least 3 characters" })
+    .max(20, { message: "Name must be less than 20 characters" }),
+  ownerName: z
+    .string()
+    .trim()
+    .min(3, { message: "Name must be at least 3 characters" })
+    .max(20, { message: "Name must be less than 20 characters" }),
+  imageUrl: z
+    .string()
+    .trim()
+    .url({ message: "Must be a valid image url" })
+    .optional(),
+  age: z.coerce
+    .number({ invalid_type_error: "Age must be a number" })
+    .int()
+    .positive()
+    .max(99),
+  notes: z.string().trim().max(1000).optional(),
+});
 
 export default function PetForm({
   actionType,
@@ -52,7 +78,9 @@ export default function PetForm({
     register,
     trigger,
     formState: { isSubmitting, errors },
-  } = useForm<PetInternal>();
+  } = useForm<PetInternal>({
+    resolver: zodResolver(petFormSchema),
+  });
 
   return (
     <form
@@ -94,13 +122,7 @@ export default function PetForm({
           <Label htmlFor="name">Name</Label>
           <Input
             id="name"
-            {...register("name", {
-              required: "Name is required",
-              minLength: {
-                value: 3,
-                message: "Name must be at least 3 characters",
-              },
-            })}
+            {...register("name")}
             // name="name"
             // type="text"
             // required
@@ -111,24 +133,7 @@ export default function PetForm({
 
         <div className="space-y-1">
           <Label htmlFor="ownerName">Owner Name</Label>
-          <Input
-            id="ownerName"
-            {...register("ownerName", {
-              required: "Owner name is required",
-              minLength: {
-                value: 3,
-                message: "Owner name must be at least 3 characters",
-              },
-              maxLength: {
-                value: 20,
-                message: "Owner name must be less than 20 characters",
-              },
-            })}
-            // name="ownerName"
-            // type="text"
-            // required
-            // defaultValue={actionType === "edit" ? selectedPet?.ownerName : ""}
-          />
+          <Input id="ownerName" {...register("ownerName")} />
           {errors.ownerName && (
             <p className="text-red-500">{errors.ownerName.message}</p>
           )}
@@ -136,13 +141,7 @@ export default function PetForm({
 
         <div className="space-y-1">
           <Label htmlFor="imageUrl">Image URL</Label>
-          <Input
-            id="imageUrl"
-            {...register("imageUrl", {})}
-            // name="imageUrl"
-            // type="url"
-            // defaultValue={actionType === "edit" ? selectedPet?.imageUrl : ""}
-          />
+          <Input id="imageUrl" {...register("imageUrl")} />
           {errors.imageUrl && (
             <p className="text-red-500">{errors.imageUrl.message}</p>
           )}
@@ -150,27 +149,13 @@ export default function PetForm({
 
         <div className="space-y-1">
           <Label htmlFor="age">Age</Label>
-          <Input
-            id="age"
-            {...register("age")}
-            // name="age"
-            // type="number"
-            // required
-            // defaultValue={actionType === "edit" ? selectedPet?.age : ""}
-          />
+          <Input id="age" {...register("age")} />
           {errors.age && <p className="text-red-500">{errors.age.message}</p>}
         </div>
 
         <div className="space-y-1">
           <Label htmlFor="notes">Notes</Label>
-          <Textarea
-            id="notes"
-            {...register("notes")}
-            // name="notes"
-            // rows={3}
-            // required
-            // defaultValue={actionType === "edit" ? selectedPet?.notes : ""}
-          />
+          <Textarea id="notes" {...register("notes")} rows={3} />
           {errors.notes && (
             <p className="text-red-500">{errors.notes.message}</p>
           )}
