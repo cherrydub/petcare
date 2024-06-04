@@ -41,6 +41,9 @@ const petFormSchema = z.object({
   notes: z.string().trim().max(1000).optional(),
 });
 
+// now i can clone from the zod schema what i expect and can use that elsewhere
+type TPetForm = z.infer<typeof petFormSchema>;
+
 export default function PetForm({
   actionType,
   onFormSubmission,
@@ -78,7 +81,7 @@ export default function PetForm({
     register,
     trigger,
     formState: { isSubmitting, errors },
-  } = useForm<PetInternal>({
+  } = useForm<TPetForm>({
     resolver: zodResolver(petFormSchema),
   });
 
