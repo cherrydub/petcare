@@ -11,38 +11,24 @@ import { useForm } from "react-hook-form";
 import { PetInternal } from "@/lib/types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { DEFUALT_PET_IMAGE_URL } from "@/lib/constants";
+import { TPetForm, petFormSchema } from "@/lib/validations";
+import { Console } from "console";
 
 type PetFormProps = {
   actionType: "add" | "edit";
   onFormSubmission: () => void;
 };
 
-const petFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(3, { message: "Name must be at least 3 characters" })
-    .max(20, { message: "Name must be less than 20 characters" }),
-  ownerName: z
-    .string()
-    .trim()
-    .min(3, { message: "Name must be at least 3 characters" })
-    .max(20, { message: "Name must be less than 20 characters" }),
-  imageUrl: z
-    .string()
-    .trim()
-    .url({ message: "Must be a valid image url" })
-    .optional(),
-  age: z.coerce
-    .number({ invalid_type_error: "Age must be a number" })
-    .int()
-    .positive()
-    .max(99),
-  notes: z.string().trim().max(1000).optional(),
-});
+// this will only work for onSubmit
+// .transform((data) => ({
+//   ...data,
+//   imageUrl:
+//     data.imageUrl ||
+//     "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
+// }));
 
 // now i can clone from the zod schema what i expect and can use that elsewhere
-type TPetForm = z.infer<typeof petFormSchema>;
 
 export default function PetForm({
   actionType,
@@ -80,26 +66,34 @@ export default function PetForm({
   const {
     register,
     trigger,
+    getValues,
     formState: { isSubmitting, errors },
   } = useForm<TPetForm>({
     resolver: zodResolver(petFormSchema),
+    defaultValues: selectedPet,
   });
 
   return (
     <form
       action={async (formData) => {
         const result = await trigger();
+
+        if (!result)
+          alert("client side validation says that something is wrong");
         if (!result) return;
         onFormSubmission();
-        const petData = {
-          name: formData.get("name") as string,
-          ownerName: formData.get("ownerName") as string,
-          imageUrl:
-            (formData.get("imageUrl") as string) ||
-            "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
-          age: +(formData.get("age") as string),
-          notes: formData.get("notes") as string,
-        };
+
+        const petData = getValues();
+        petData.imageUrl = petData.imageUrl || DEFUALT_PET_IMAGE_URL;
+        // const petData = {
+        //   name: formData.get("name") as string,
+        //   ownerName: formData.get("ownerName") as string,
+        //   imageUrl:
+        //     (formData.get("imageUrl") as string) ||
+        //     "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
+        //   age: +(formData.get("age") as string),
+        //   notes: formData.get("notes") as string,
+        // };
 
         if (actionType === "edit") {
           // const error = await editPet(selectedPet!.id, formData);

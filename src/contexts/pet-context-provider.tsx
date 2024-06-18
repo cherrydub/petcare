@@ -80,9 +80,6 @@ export default function PetContextProvider({
   }
 
   async function handleCheckoutPet(id: Pet["id"]) {
-    // const newPets = data.filter((pet) => pet.id !== id);
-    // setPets(newPets);
-
     setOptimisticPets({ action: "checkout", payload: id });
     const error = await checkoutPet(id);
     if (error) {
