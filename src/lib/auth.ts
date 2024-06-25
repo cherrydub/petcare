@@ -10,8 +10,12 @@ const config = {
   //   },
   providers: [],
   callbacks: {
-    authorized: () => {
-      return false;
+    authorized: ({ request }) => {
+      const isTryingtoAccessApp = request.nextUrl.pathname.includes("/app");
+
+      if (isTryingtoAccessApp) {
+        return false;
+      } else return true;
     },
   },
 } satisfies NextAuthConfig;
