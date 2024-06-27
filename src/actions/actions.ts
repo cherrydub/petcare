@@ -5,6 +5,7 @@ import prisma from "@/lib/db";
 import { sleep } from "@/lib/utils";
 import { petFormSchema, petIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
+import bcrypt from "bcryptjs";
 
 // ---- user actions ----
 export async function logIn(formData: FormData) {
@@ -13,8 +14,22 @@ export async function logIn(formData: FormData) {
   const password = formData.get("password");
   //or
   const authData = Object.fromEntries(formData.entries());
+  // await signIn("credentials", authData);
+  //or
+  //since we're using nextauth, we dont have to convert, we can just use formData
 
-  await signIn("credentials", authData);
+  await signIn("credentials", formData);
+}
+
+export async function signUp(formData: FormData) {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  //first we signup with the hashed password
+  await prisma.user.create({ data: { email, hashedPassword } });
+  //then we login with the original non hashed password
+  //we can use formdata instead of email and password since its same
+  await signIn("credentials", formData);
 }
 
 export async function signOutAction() {
