@@ -52,9 +52,13 @@ const config = {
       if (isLoggedIn && isTryingtoAccessApp) {
         return true;
       }
-      if (!isTryingtoAccessApp) {
+      if (isLoggedIn && !isTryingtoAccessApp) {
+        return Response.redirect(new URL("/app/dashboard", request.nextUrl));
+      }
+      if (!isLoggedIn && !isTryingtoAccessApp) {
         return true;
       }
+      return false;
     },
   },
 } satisfies NextAuthConfig;

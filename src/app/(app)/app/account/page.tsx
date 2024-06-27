@@ -4,6 +4,7 @@ import React from "react";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import SignoutButton from "@/components/SignoutButton";
 
 export default async function Account() {
   //auth() for server components
@@ -21,6 +22,8 @@ export default async function Account() {
 
       <ContentBlock className="flex-center mt-10 h-[500px] flex-col gap-3">
         <p>Logged in as {session.user.email}</p>
+
+        <SignoutButton />
       </ContentBlock>
     </main>
   );
